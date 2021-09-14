@@ -24,7 +24,13 @@
         var playerYpos = 0;
         var playerXspeed = 5;
         var playerYspeed = 4;
-        var PLAYER_SIZE = 20;
+        const PLAYER_SIZE = 15;
+
+        var fishXpos = 0;
+        var fishYpos = 0;
+        var fishXspeed = 5;
+        var fishYspeed = 4;
+        const FISH_SIZE = 15;
 
         const RIGHT_KEY = 39;
         const UP_KEY = 38;
@@ -35,18 +41,66 @@
         var upKeyPressed = false;
         var downKeyPressed = false;
 
+
+        var enemies = [];
+
+        var starting = true;
+
+
+
+
         function mainloop() {
             colorRect(0, 0, canvas.width, canvas.height, 'black')
-            colorRect(playerXpos, playerYpos, PLAYER_SIZE, PLAYER_SIZE, 'red');
+            colorRect(playerXpos, playerYpos, PLAYER_SIZE, PLAYER_SIZE, 'white');
+//            colorRect(fishXpos, fishYpos, FISH_SIZE, FISH_SIZE, 'green');
+
+            if (starting) {
+                expos = canvas.width / 2;
+                for (var i = 0; i < 10; i++) {
+                    makeEnemy();
+                }
+                starting = false;
+            }
 
             playerMove();
+
+            drawFish();
         }
+
+        function makeEnemy() {
+            var FISH_SIZE = 20;
+            var eXpos = Math.floor(Math.random() * (canvas.width - FISH_SIZE));
+            var eYpos = 0;
+            var eXspeed = 1;
+            var eYspeed = 1;
+
+            var enemy = {
+                enemyXpos: eXpos,
+                enemyYpos: eYpos,
+                FISH_SIZE: FISH_SIZE,
+                eXspeed: eXspeed,
+                eYspeed: eYspeed,
+            }
+
+            enemies.push(enemy)
+
+
+        }
+
+
+        function drawFish(){
+            enemies.forEach(function(e,i,array){
+                colorRect(e.enemyXpos,e.enemyYpos, e.FISH_SIZE, e.FISH_SIZE, 'orange');
+            });
+        }
+
+
 
         function keyPressed(evt) {
             console.log(evt.keyCode)
-            if (evt.keyCode == RIGHT_KEY){
-            rightKeyPressed = true; 
-                
+            if (evt.keyCode == RIGHT_KEY) {
+                rightKeyPressed = true;
+
             }
             if (evt.keyCode == LEFT_KEY) {
                 leftKeyPressed = true;
@@ -64,8 +118,8 @@
 
         function keyReleased(evt) {
             console.log(evt.keyCode)
-            if (evt.keyCode == RIGHT_KEY){
-                rightKeyPressed = false; 
+            if (evt.keyCode == RIGHT_KEY) {
+                rightKeyPressed = false;
             }
             if (evt.keyCode == LEFT_KEY) {
                 leftKeyPressed = false;
@@ -83,21 +137,32 @@
 
         function playerMove() {
             if (rightKeyPressed) {
-                playerXpos += playerXspeed
+                playerXpos += playerXspeed;
             }
 
             if (leftKeyPressed) {
-                playerXpos -= playerXspeed
+                playerXpos -= playerXspeed;
 
             }
+
             if (upKeyPressed) {
-                playerYpos -= playerYspeed
+                playerYpos -= playerYspeed;
 
             }
             if (downKeyPressed) {
-                playerYpos += playerYspeed
+                playerYpos += playerYspeed;
             }
         }
+
+        function fishmove() {
+            fishYpos += fishYspeed;
+
+            if (fishYpos > canvas.height)
+                fishYpos = 0 - FISH_SIZE;
+            fishXpos = Math.floor(Math.random() * (canvas.width - FISH_SIZE));
+        }
+
+
 
 
         function colorRect(x, y, w, h, c) {
