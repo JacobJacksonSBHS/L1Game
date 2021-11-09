@@ -20,6 +20,28 @@
             setInterval(mainloop, 1000 / 50);
 
         }
+        
+        var userName = '';
+        
+        while(userName == '' || userName == null){
+           userName = prompt("whats your name?")   
+        }
+        
+        var diff = '';
+        var pass = false; 
+        
+        while(pass == false){
+            diff = prompt("how hard?")
+            if(diff == 'easy'){
+               pass = true;
+            }
+        }
+        var lives = 0;
+        
+        if(diff == 'easy'){
+            lives = 5;       
+        }
+        
         var playerXpos = 0;
         var playerYpos = 0;
         var playerXspeed = 5;
@@ -40,7 +62,7 @@
         var leftKeyPressed = false;
         var upKeyPressed = false;
         var downKeyPressed = false;
-
+        var score = 0;
 
         var enemies = [];
 
@@ -52,8 +74,8 @@
         function mainloop() {
             colorRect(0, 0, canvas.width, canvas.height, 'black')
             colorRect(playerXpos, playerYpos, PLAYER_SIZE, PLAYER_SIZE, 'white');
-//            colorRect(fishXpos, fishYpos, FISH_SIZE, FISH_SIZE, 'green');
-
+            //            colorRect(fishXpos, fishYpos, FISH_SIZE, FISH_SIZE, 'green');
+            colorText(lives, 50, 50,'20px Arial','red');
             if (starting) {
                 expos = canvas.width / 2;
                 for (var i = 0; i < 10; i++) {
@@ -65,21 +87,22 @@
             playerMove();
 
             drawFish();
+            fishmove();
         }
 
         function makeEnemy() {
-            var FISH_SIZE = 20;
-            var eXpos = Math.floor(Math.random() * (canvas.width - FISH_SIZE));
-            var eYpos = 0;
-            var eXspeed = 1;
-            var eYspeed = 1;
+            var FISH_SIZE = 23;
+            var fishXpos = Math.floor(Math.random() * (canvas.width - FISH_SIZE)+ FISH_SIZE);
+            var fishYpos = 0;
+            var fishXspeed = 1;
+            var fishYspeed = 1;
 
             var enemy = {
-                enemyXpos: eXpos,
-                enemyYpos: eYpos,
+                fishXpos: fishXpos,
+                fishYpos: fishYpos,
                 FISH_SIZE: FISH_SIZE,
-                eXspeed: eXspeed,
-                eYspeed: eYspeed,
+                fishXspeed: fishXspeed,
+                fishYspeed: fishYspeed,
             }
 
             enemies.push(enemy)
@@ -88,15 +111,16 @@
         }
 
 
-        function drawFish(){
-            enemies.forEach(function(e,i,array){
-                colorRect(e.enemyXpos,e.enemyYpos, e.FISH_SIZE, e.FISH_SIZE, 'orange');
+        function drawFish() {
+            enemies.forEach(function(e, i, array) {
+                colorRect(e.fishXpos, e.fishYpos, e.FISH_SIZE, e.FISH_SIZE, 'orange');
             });
         }
 
 
 
         function keyPressed(evt) {
+            //
             console.log(evt.keyCode)
             if (evt.keyCode == RIGHT_KEY) {
                 rightKeyPressed = true;
@@ -117,7 +141,7 @@
         }
 
         function keyReleased(evt) {
-            console.log(evt.keyCode)
+           // console.log(evt.keyCode)
             if (evt.keyCode == RIGHT_KEY) {
                 rightKeyPressed = false;
             }
@@ -154,20 +178,33 @@
             }
         }
 
-        function fishmove() {
-            fishYpos += fishYspeed;
-
-            if (fishYpos > canvas.height)
-                fishYpos = 0 - FISH_SIZE;
-            fishXpos = Math.floor(Math.random() * (canvas.width - FISH_SIZE));
+        function fishmove(){
+            enemies.forEach(function(e, i, array){
+                    e.fishYpos += e.fishYspeed;
+               if (e.fishYpos > canvas.height){
+                   e.fishYpos = 0 - e.FISH_SIZE; 
+                   e.fishXpos = Math.floor(Math.random() * (canvas.width - e.FISH_SIZE) + e.FISH_SIZE);
+                   e.fishYspeed = Math.floor(Math.random() * (4 - 2) + 2);            
+                    score++;
+                }
+                if(e.fishXpos < playerXpos + PLAYER_SIZE && e.fishXpos + e.FISH_SIZE > playerXpos && e.fishYpos + e.FISH_SIZE > playerYpos && e.fishYpos < playerYpos + PLAYER_SIZE){
+                    playerXpos = 0;
+                    playerYpos = canvas.height - PLAYER_SIZE;
+                    console.log('hit');
+                }
+            });
         }
 
 
-
-
-        function colorRect(x, y, w, h, c) {
-            canavsContext.fillStyle = c;
-            canavsContext.fillRect(x, y, w, h)
+            function colorRect(x, y, w, h, c) {
+                canavsContext.fillStyle = c;
+                canavsContext.fillRect(x, y, w, h)
+            }
+        
+        function colorText(msg, x, y,f,c){
+            canavsContext.font = f;
+          canavsContext.fillStyle = c;
+          canavsContext.fillText(msg, x, y);
         }
 
     </script>
